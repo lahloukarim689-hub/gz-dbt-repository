@@ -1,25 +1,19 @@
-with 
-
-source as (
-
-    select * from {{ source('raw', 'sales') }}
-
+with source as (
+    select * 
+    from {{ source('raw', 'sales') }}
 ),
 
 renamed as (
-
     select
-        date_date
-        orders_id
-        pdt_id as products_id
-        revenue
-        quantity
-
-    from source
-    LEFT JOIN ({ source('raw', 'product') })
-    USING(pdt_id)
-    
-
+        s.date_date,
+        s.orders_id,
+        s.pdt_id as products_id,
+        quantity,
+        s.revenue                   
+    from {{ source('raw', 'sales') }} s
+    left join {{ source('raw', 'product') }} p
+        on s.pdt_id = p.products_id
 )
 
-select * from renamed
+select * 
+from renamed
